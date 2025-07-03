@@ -1,0 +1,13 @@
+<h1>Welcome, Admin {{user.username}}</h1>
+<form action="/admin/add-product" method="POST">
+  <input name="name" placeholder="Product Name" required>
+  <input name="price" type="number" placeholder="Price" required>
+  <input name="stock" type="number" placeholder="Stock" required>
+  <button>Add Product</button>
+</form>
+<ul>
+  {{#each products}}
+    <li>{{this.name}} - ₹{{this.price}} (Stock: {{this.stock}})</li>
+  {{/each}}
+</ul>
+<a href="/logout">Logout</a>

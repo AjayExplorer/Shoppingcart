@@ -1,41 +1,38 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+// 📁 app.js
+const express = require('express');
+const path = require('path');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const mongoose = require('mongoose');
+const app = express();
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const authRouter = require('./routes/auth');
+const adminRouter = require('./routes/admin');
+const customerRouter = require('./routes/customer');
 
-var app = express();
-
-// view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// ✅ FIXED MongoDB connection with error handling
+mongoose.connect('mongodb://localhost:27017/ecommerce', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log("✅ MongoDB connected"))
+.catch(err => console.error("❌ MongoDB connection error:", err));
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+app.use(session({
+  secret: 'secretkey123',
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({ mongoUrl: 'mongodb://localhost:27017/ecommerce' })
+}));
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use('/', authRouter);
+app.use('/admin', adminRouter);
+app.use('/shop', customerRouter);
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-module.exports = app;
+app.listen(3000, () => console.log('🚀 Server running at http://localhost:3000'));

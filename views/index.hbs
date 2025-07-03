@@ -1,2 +1,48 @@
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>{{title}}</h1>
+      <p class="tagline">Your favorite items in one place</p>
+    </header>
+
+    <section class="products">
+      {{#each products}}
+        <div class="product">
+          <h2>{{this.name}}</h2>
+          <p class="price">₹{{this.price}}</p>
+          <form action="/add-to-cart" method="POST">
+            <input type="hidden" name="productId" value="{{this.id}}">
+            <button type="submit">Add to Cart</button>
+          </form>
+        </div>
+      {{/each}}
+    </section>
+
+    <section class="cart-box">
+      <h2>🛒 Your Cart</h2>
+      {{#if cart.length}}
+        <ul class="cart-list">
+          {{#each cart}}
+            <li>
+              {{this.name}} — ₹{{this.price}}
+              <form action="/remove-from-cart" method="POST" style="display:inline;">
+                <input type="hidden" name="productId" value="{{this.id}}">
+                <button class="remove-btn">Remove</button>
+              </form>
+            </li>
+          {{/each}}
+        </ul>
+        <div class="cart-total">Total: ₹{{total}}</div>
+      {{else}}
+        <p class="cart-empty">Cart is currently empty.</p>
+      {{/if}}
+    </section>
+  </div>
+</body>
+</html>

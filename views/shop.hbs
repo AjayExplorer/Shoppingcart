@@ -1,0 +1,7 @@
+<h1>Welcome, {{user.username}}</h1>
+<ul>
+  {{#each products}}
+    <li>{{this.name}} - ₹{{this.price}} (In Stock: {{this.stock}})</li>
+  {{/each}}
+</ul>
+<a href="/logout">Logout</a>
